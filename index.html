@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ORBITSMP | CZYSTY SURVIVAL + LIFESTEAL</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', 'Segoe UI', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        :root {
+            --primary: #f43f5e;
+            --primary-glow: rgba(244, 63, 94, 0.4);
+            --secondary: #38bdf8;
+            --secondary-glow: rgba(56, 189, 248, 0.3);
+            --bg-dark: #090507;
+            --card-bg: rgba(20, 10, 15, 0.75);
+            --card-hover: rgba(35, 15, 25, 0.85);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --danger: #f43f5e;
+            --border-color: rgba(255, 255, 255, 0.05);
+            --gold: #f59e0b;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow-x: hidden;
+            background-image: 
+                radial-gradient(circle at 10% 15%, rgba(244, 63, 94, 0.18) 0%, transparent 50%),
+                radial-gradient(circle at 90% 85%, rgba(56, 189, 248, 0.12) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(15, 23, 42, 0.6) 0%, var(--bg-dark) 80%);
+            background-attachment: fixed;
+            line-height: 1.6;
+        }
+
+        .wrapper {
+            max-width: 1300px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 30px 0;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 60px;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo span {
+            color: var(--primary);
+            text-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            padding: 10px 18px;
+            border-radius: 8px;
+            color: var(--text-main);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+            transform: translateY(-2px);
+        }
+
+        .hero {
+            text-align: center;
+            margin-bottom: 90px;
+            padding: 50px 20px;
+            position: relative;
+        }
+
+        .hero h1 {
+            font-size: 4.8rem;
+            font-weight: 900;
+            line-height: 1.1;
+            margin-bottom: 25px;
+            background: linear-gradient(to right, #ffffff, #fca5a5, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            max-width: 800px;
+            margin: 0 auto 40px auto;
+        }
+
+        .status-container {
+            background: var(--card-bg);
+            border: 2px solid rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(20px);
+            border-radius: 28px;
+            padding: 40px;
+            display: inline-block;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+            max-width: 680px;
+            width: 100%;
+            transition: border-color 0.4s;
+        }
+
+        .status-container:hover {
+            border-color: var(--primary);
+        }
+
+        .ip-box {
+            background: linear-gradient(135deg, #220c10, #0d0507);
+            border: 2px dashed var(--primary);
+            border-radius: 16px;
+            padding: 22px;
+            font-size: 1.7rem;
+            font-weight: 900;
+            color: var(--primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .ip-box:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 30px var(--primary-glow);
+            border-style: solid;
+        }
+
+        .live-indicators {
+            display: flex;
+            justify-content: space-around;
+            border-top: 2px solid var(--border-color);
+            padding-top: 25px;
+        }
+
+        .indicator {
+            text-align: center;
+        }
+
+        .ind-label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 700;
+        }
+
+        .ind-value {
+            font-size: 1.6rem;
+            font-weight: 900;
+        }
+
+        .online { color: var(--success); text-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
+        .offline { color: var(--danger); text-shadow: 0 0 15px rgba(244, 63, 94, 0.4); }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--text-main);
+            position: relative;
+            display: inline-block;
+            padding-bottom: 10px;
+        }
+
+        .section-title span {
+            color: var(--primary);
+            text-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .section-desc {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-top: 8px;
+        }
+
+        .grid-section {
+            margin-bottom: 90px;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 25px;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 20px;
+            padding: 30px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+        }
+
+        .feature-card:hover {
+            background: var(--card-hover);
+            border-color: var(--primary);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(244, 63, 94, 0.08);
+        }
+
+        .feature-card.blue-card:hover {
+            border-color: var(--secondary);
+            box-shadow: 0 12px 24px rgba(56, 189, 248, 0.08);
+        }
+
+        .feature-card h3 {
+            color: var(--primary);
+            margin-bottom: 12px;
+            font-size: 1.3rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-card.blue-card h3 {
+            color: var(--secondary);
+        }
+
+        .feature-card p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .info-strip {
+            background: linear-gradient(90deg, rgba(244, 63, 94, 0.1), rgba(56, 189, 248, 0.1));
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 90px;
+            text-align: center;
+        }
+
+        .info-strip h4 {
+            font-size: 1.4rem;
+            color: #fff;
+            margin-bottom: 5px;
+        }
+
+        .info-strip p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .rules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 20px;
+        }
+
+        .rule-card {
+            background: rgba(244, 63, 94, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 14px;
+            padding: 22px;
+            transition: all 0.3s ease;
+        }
+
+        .rule-card:hover {
+            border-color: var(--danger);
+            background: rgba(244, 63, 94, 0.04);
+            transform: translateX(3px);
+        }
+
+        .rule-card h4 {
+            color: var(--danger);
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+
+        .faq-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+        }
+
+        .faq-card {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 25px;
+            transition: border-color 0.3s;
+        }
+
+        .faq-card:hover {
+            border-color: var(--primary);
+        }
+
+        .faq-card h4 {
+            color: var(--primary);
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .interactive-section {
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 24px;
+            padding: 40px;
+            margin-bottom: 60px;
+            backdrop-filter: blur(10px);
+        }
+
+        .admin-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .admin-box {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 25px;
+        }
+
+        .admin-box h3 {
+            color: var(--primary);
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .input-group label {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        .input-group input, .input-group select {
+            background: #0d0507;
+            border: 2px solid var(--border-color);
+            padding: 12px;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            font-weight: 700;
+            outline: none;
+        }
+
+        .input-group input:focus, .input-group select:focus {
+            border-color: var(--primary);
+        }
+
+        .btn-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .admin-btn {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .admin-btn:hover {
+            box-shadow: 0 0 15px var(--primary-glow);
+            transform: translateY(-1px);
+        }
+
+        .admin-btn.secondary-btn {
+            background: #334155;
+        }
+
+        .console-output {
+            background: #000;
+            border-left: 4px solid var(--primary);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            color: var(--success);
+            word-break: break-all;
+            text-transform: none;
+            letter-spacing: 0px;
+        }
+
+        .login-trigger-container {
+            text-align: center;
+            margin-top: 40px;
+            margin-bottom: 20px;
+        }
+
+        .login-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .login-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+            box-shadow: 0 0 15px rgba(244, 63, 94, 0.2);
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px 0;
+            border-top: 2px solid var(--border-color);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 1024px) {
+            .faq-grid { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.8rem; }
+            .hero p { font-size: 1rem; }
+            .section-title { font-size: 2rem; }
+            .admin-grid { grid-template-columns: 1fr; }
+            .nav-links { display: none; }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <div class="wrapper">
+        
+        <header>
+            <div class="logo">ORBIT<span>SMP</span></div>
+            <div class="nav-links">
+                <a href="#SURVIVAL" class="nav-btn">SURVIVAL</a>
+                <a href="#LIFESTEAL" class="nav-btn">LIFESTEAL</a>
+                <a href="#ZASADY" class="nav-btn">REGULAMIN</a>
+                <a href="#PYTANIA" class="nav-btn">FAQ</a>
+            </div>
+        </header>
+
+        <section class="hero">
+            <h1>SURVIVAL + LIFESTEAL</h1>
+            <p>PRAWDZIWA ROZGRYWKA MINECRAFT BEZ SKLEPÓW, KLANÓW I EKONOMII. LICZĄ SIĘ TWOJE UMIEJĘTNOŚCI, SPRYT ORAZ WALKA O PRZETRWANIE.</p>
+            
+            <div class="status-container">
+                <div class="ip-box" onclick="copyIP()">
+                    <span>ORBITSMP.6MC.PL</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                </div>
+                
+                <div class="live-indicators">
+                    <div class="indicator">
+                        <div class="ind-label">STATUS MACHNINY</div>
+                        <div class="ind-value" id="server-status">PROBKA...</div>
+                    </div>
+                    <div class="indicator">
+                        <div class="ind-label">GRACZE ONLINE</div>
+                        <div class="ind-value" id="player-count">- / -</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div class="info-strip">
+            <h4>BETA SEZON ROZPOCZĘTY</h4>
+            <p>WSZYSTKIE SYSTEMY DZIAŁAJĄ POPRZEZ ZABEZPIECZONE PROXY. WEJDŹ I SPRAWDŹ SWOJE SIŁY.</p>
+        </div>
+
+        <section class="grid-section" id="SURVIVAL">
+            <div class="section-header">
+                <h2 class="section-title">CZYSTY <span>ZWYKŁY SURVIVAL</span></h2>
+                <p class="section-desc">KLASYCZNE FILARY ROZGRYWKI BEZ SZTUCZNYCH MODYFIKACJI I ZBĘDNYCH DODATKÓW</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <h3>🌲 NATURALNA GENERACJA</h3>
+                    <p>CAŁY ŚWIAT GENERUJE SIĘ CAŁKOWICIE KLASYCZNIE. BRAK GENERATORÓW STRUKTUR CZY SZTUCZNYCH BIOMÓW. PRAWDZIWY MINECRAFT TAKI, JAKI POWINIEN BYĆ.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⛏️ BRAK DROPÓW ZE STONE</h3>
+                    <p>NIE ZNAJDZIESZ TU ŻADNYCH PODZIELONYCH SZANS NA DROP SUROWCÓW Z KAMIENIA. DIAMENTY, ZŁOTO, ŻELAZO I WĘGIEL ZNAJDZIESZ WYŁĄCZNIE W NATURALNYCH RUDACH W JASKINIACH.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>📦 TRADYCYJNY HANDEL BARTEROWY</h3>
+                    <p>CAŁKOWITY BRAK SYSTEMÓW PIENIĘŻNYCH, KOMEND /BAL CZY WIRTUALNYCH SKLEPÓW. JEDYNA WYMIANA TO BEZPOŚREDNI HANDEL MIĘDZY GRACZAMI PRZEDMIOT ZA PRZEDMIOT.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🛡️ BRAK CUBIDÓW I DZIAŁEK</h3>
+                    <p>TWOJA BAZA JEST BEZPIECZNA TYLKO WTEDY, GDY JĄ DOBRZE UKRYJESZ LUB OBRONISZ WŁASNYM MIECZEM. NIE MA ŻADNYCH SZTUCZNYCH BLOKÓW OCHRONNYCH.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>🔥 NETHER ORAZ END</h3>
+                    <p>WYPRAWY DO INNYCH WYMIARÓW WIĄŻĄ SIĘ Z OGROMNYM RYZYKIEM. SĄ TO STREFY CAŁKOWITEGO BRAKU LITOŚCI, GDZIE PRZETRWAJĄ TYLKO NAJLEPIEJ PRZYGOTOWANI.</p>
+                </div>
+                <div class="feature-card">
+                    <h3>⚔️ BRAK KLANÓW I SOJUSZY</h3>
+                    <p>NIE MA ŻADNYCH SYSTEMÓW DRUŻYNOWYCH WPISYWANYCH KOMENDAMI. KAŻDY ODPOWIADA ZA SIEBIE, A EWENTUALNE SOJUSZE SĄ OPARTE WYŁĄCZNIE NA SŁOWNYM ZAUFANIU.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid-section" id="LIFESTEAL">
+            <div class="section-header">
+                <h2 class="section-title">MECHANIKA <span>LIFESTEAL</span></h2>
+                <p class="section-desc">ZASADY BRUTALNEGO SYSTEMU WYDZIERANIA ZDROWIA INNYM GRACZOM</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card blue-card">
+                    <h3>❤️ KRADZIEŻ SERC PRZY PVP</h3>
+                    <p>JEŚLI POKONASZ INNEGO GRACZA W BEZPOŚREDNIEJ WALCE, ON TRACI JEDNO SERCE ZE SWOJEGO PASKA, A TY JE AUTOMATYCZNIE OTRZYMUJESZ. ZWIĘKSZAJ SWOJĄ POTĘGĘ.</p>
+                </div>
+                <div class="feature-card blue-card">
+                    <h3>💀 SYSTEM ELIMINACJI</h3>
+                    <p>STRATA WSZYSTKICH SERC OZNACZA ŚMIERĆ OSTATECZNĄ I TYMCZASOWĄ BLOKADĘ DOSTĘPU DO ŚWIATA. KAŻDE SERCE MA OGROMNĄ WARTOŚĆ DLA TWOJEGO PRZETRWANIA.</p>
+                </div>
+                <div class="feature-card blue-card">
+                    <h3>🧪 WYTWARZANIE SERC</h3>
+                    <p>MOŻESZ PRZYWRACAĆ LUB POWIĘKSZAĆ SWÓJ MAKSYMALNY PASEK ZDROWIA POPRZEZ TRUDNE RECEPTURY CRAFTINGU, UŻYWAJĄC DROGOCENNYCH MATERIAŁÓW Z SURVIVALU.</p>
+                </div>
+                <div class="feature-card blue-card">
+                    <h3>⚡ SYSTEM REANIMACJI</h3>
+                    <p>JEŚLI TWÓJ ZNAJOMY ZOSTANIE WYELIMINOWANY Z POWODU BRAKU SERC, MOŻESZ GO WSKRZESIĆ, JEŚLI WYTWORZYSZ RZADKI PRZEDMIOT REANIMACYJNY I UŻYJESZ GO NA SPAWNIE.</p>
+                </div>
+                <div class="feature-card blue-card">
+                    <h3>🩸 ADRENALINA POTYCZEK</h3>
+                    <p>BRAK UŁATWIEŃ SPRAWIA, ŻE KAŻDE SPOTKANIE INNEGO GRACZA NA ŚWIECIE WIĄŻE SIĘ Z OGROMNYM SKOKIEM ADRENALINY. NIKT NIE MOŻE CZUĆ SIĘ W STU PROCENTACH BEZPIECZNY.</p>
+                </div>
+                <div class="feature-card blue-card">
+                    <h3>🏹 LIMIT MAKSYMALNY</h3>
+                    <p>ISTNIEJE MAKSYMALNY PUŁAP SERC, JAKI MOŻE POSIADAĆ JEDEN GRACZ. ZAPOBIEGA TO NIEOGRANICZONEMU ZWIĘKSZANIU ZDROWIA I ZAPEWNIA BALANS WALKI.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid-section" id="ZASADY">
+            <div class="section-header">
+                <h2 class="section-title">ZASADY <span>ROZGRYWKI</span></h2>
+                <p class="section-desc">PROSTE I PRZEJRZYSTE REGUŁY SPRAWIEDLIWEJ WALKI NA SERWERZE</p>
+            </div>
+
+            <div class="rules-grid">
+                <div class="rule-card">
+                    <h4>01. ZAKAZ CHEATOWANIA</h4>
+                    <p>UŻYWANIE JAKICHKOLWIEK MODYFIKACJI ZEWNĘTRZNYCH DAJĄCYCH PRZEWAGĘ BĘDZIE NATYCHMIAST BANOWANE PRZEZ SYSTEM ANTY-CHEAT.</p>
+                </div>
+                <div class="rule-card">
+                    <h4>02. BŁĘDY SILNIKA</h4>
+                    <p>WYKORZYSTYWANIE JAKICHKOLWIEK BŁĘDÓW GRY (W TYM DUPLIKOWANIA SUROWCÓW) SKUTKUJE CAŁKOWITYM WYCZYSZCZENIEM POSTĘPU I BANEM.</p>
+                </div>
+                <div class="rule-card">
+                    <h4>03. KULTURA NA CZACIE</h4>
+                    <p>ZAKAZ REKLAMOWANIA INNYCH PROJEKTÓW ORAZ SKRAJNEGO TOKSYCZNEGO ZACHOWANIA. SZANUJMY CZAS I ROZGRYWKĘ KAŻDEGO UŻYTKOWNIKA.</p>
+                </div>
+                <div class="rule-card">
+                    <h4>04. GRYWALNOŚĆ</h4>
+                    <p>WALKA JEST ELEMENTEM GRY, JEDNAK CELOWE, NOTORYCZNE UTRUDNIANIE WEJŚCIA NA SERWER NOWYM GRACZOM NA SAMYM SPAWNIE JEST ZAKAZANE.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid-section" id="PYTANIA">
+            <div class="section-header">
+                <h2 class="section-title">NAJCZĘSTSZE <span>PYTANIA (FAQ)</span></h2>
+                <p class="section-desc">WSZYSTKO, CO MUSISZ WIEDZIEĆ PRZED DOŁĄCZENIEM DO ŚWIATA</p>
+            </div>
+
+            <div class="faq-grid">
+                <div class="faq-card">
+                    <h4>CZY SERWER WYMAGA SPECJALNYCH PORTÓW?</h4>
+                    <p>NIE. SERWER DZIAŁA NA DEDYKOWANEJ INFRASTRUKTURZE PROXY, CO OZNACZA, ŻE WYSTARCZY WPISAĆ KLASYCZNY ADRES ORBITSMP.6MC.PL W GRZE I POŁĄCZYĆ SIĘ BEZ ŻADNYCH DODATKOWYCH LICZB.</p>
+                </div>
+                <div class="faq-card">
+                    <h4>JAK MOGĘ ODZYSKAĆ STRACONE SERCA?</h4>
+                    <p>SERCA MOŻESZ ODZYSKAĆ NA DWA SPOSOBY: POKONUJUJĄC INNYCH GRACZY W UCZCIWEJ WALCE PVP LUB SPĘDZAJĄC CZAS NA KOPANIU SUROWCÓW I CRAFTOWANIU NOWYCH SERC PRZEZ SYSTEM RZEMIOSŁA.</p>
+                </div>
+                <div class="faq-card">
+                    <h4>CZY NA SERWERZE SĄ KLANY LUB EKONOMIA?</h4>
+                    <p>NIE, NIE MA ŻADNYCH TAKICH DODATKÓW. TO STRYKTNY, ZWYKŁY SURVIVAL Z MECHANIKĄ LIFESTEAL. NIE ZNAJDZIESZ TU KOMEND KLANOWYCH, SYSTEMÓW WALUTOWYCH CZY PRAC.</p>
+                </div>
+                <div class="faq-card">
+                    <h4>CO SIĘ STANIE PO STRACIE OSTATNIEGO SERCA?</h4>
+                    <p>TWÓJ KONTO ZOSTANIE AUTOMATYCZNIE ZABLOKOWANE PRZEZ SYSTEM. JEDYNYM SPOSOBEM NA POWRÓT DO GRY JEST WSKRZESZENIE PRZEZ INNEGO GRACZA, KTÓRY UŻYJE NA TOBIE SPECJALNEGO PRZEDMIOTU REANIMACYJNEGO.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="interactive-section" id="admin-panel-section" style="display: none;">
+            <div style="text-align: center; margin-bottom: 40px;">
+                <h2 style="font-size: 2.2rem; font-weight: 900;">PANEL: <span>ZARZĄDZANIE ADM</span></h2>
+            </div>
+            
+            <div class="admin-grid">
+                
+                <div class="admin-box">
+                    <h3>🛠️ ZARZĄDZANIE GRACZEM</h3>
+                    <div class="input-group">
+                        <label for="player-nick">NICK GRACZA:</label>
+                        <input type="text" id="player-nick" placeholder="Wpisz nick...">
+                    </div>
+                    <div class="input-group">
+                        <label for="heart-count">ILOŚĆ SERC:</label>
+                        <input type="number" id="heart-count" value="20" min="1">
+                    </div>
+                    <div class="btn-group">
+                        <button class="admin-btn" onclick="executePlayerAction('ban')">BANUJ</button>
+                        <button class="admin-btn secondary-btn" onclick="executePlayerAction('unban')">UNBAN</button>
+                    </div>
+                    <div class="btn-group" style="margin-top: 10px;">
+                        <button class="admin-btn" onclick="executePlayerAction('sethearts')" style="background-color: #38bdf8;">USTAW SERCA</button>
+                        <button class="admin-btn secondary-btn" onclick="executePlayerAction('kill')">ZABIJ</button>
+                    </div>
+                    <div class="console-output" id="player-console">> OCZEKIWANIE NA AKCJĘ...</div>
+                </div>
+
+                <div class="admin-box">
+                    <h3>📢 GENERATOR OGŁOSZEŃ (BROADCAST)</h3>
+                    <div class="input-group">
+                        <label for="broadcast-style">TYP OGŁOSZENIA:</label>
+                        <select id="broadcast-style">
+                            <option value="INFO">⚠️ INFORMACJA</option>
+                            <option value="PRZERWA">⚙️ PRZERWA TECHNICZNA</option>
+                            <option value="EVENT">⚔️ EVENT LIFESTEAL</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="broadcast-text">TREŚĆ WIADOMOŚCI:</label>
+                        <input type="text" id="broadcast-text" placeholder="Wpisz tekst ogłoszenia...">
+                    </div>
+                    <button class="admin-btn" onclick="generateBroadcast()">GENERUJ KOMENDĘ</button>
+                    <div class="console-output" id="broadcast-console">> OCZEKIWANIE NA TEKST...</div>
+                </div>
+
+            </div>
+        </section>
+
+        <div class="login-trigger-container">
+            <button class="login-btn" onclick="openAdminLogin()">ZALOGUJ DO PANELU ADM</button>
+        </div>
+
+        <footer>
+            <p>&copy; 2026 ORBITSMP. WSZELKIE PRAWA ZASTRZEŻONE. CZYSTA ROZGRYWKA PVP LIFESTEAL.</p>
+        </footer>
+
+    </div>
+
+    <script>
+        function copyIP() {
+            navigator.clipboard.writeText('orbitsmp.6mc.pl');
+            alert('SKOPIOWANO ADRES IP SERWERA: ORBITSMP.6MC.PL');
+        }
+
+        function openAdminLogin() {
+            const password = prompt("PODAJ HASŁO ADMINISTRATORA:");
+            
+            if (password === "1908" || password === "admin") {
+                document.getElementById('admin-panel-section').style.display = 'block';
+                alert("ZALOGOWANO POMYŚLNIE. PANEL ZARZĄDZANIA ADM JEST TERAZ AKTYWNY.");
+                window.scrollTo({
+                    top: document.getElementById('admin-panel-section').offsetTop - 20,
+                    behavior: 'smooth'
+                });
+            } else {
+                alert("BŁĘDNE HASŁO! DOSTĘP ZABLOKOWANY.");
+            }
+        }
+
+        function executePlayerAction(action) {
+            const nick = document.getElementById('player-nick').value.trim();
+            const consoleBox = document.getElementById('player-console');
+            const hearts = document.getElementById('heart-count').value;
+
+            if (!nick) {
+                consoleBox.innerText = "> BŁĄD: NAJPIERW WPISZ NICK GRACZA!";
+                consoleBox.style.color = "#f43f5e";
+                return;
+            }
+
+            consoleBox.style.color = "#10b981";
+            if (action === 'ban') {
+                consoleBox.innerText = `/ban ${nick} Zlamanie regulaminu serwera Lifesteal`;
+            } else if (action === 'unban') {
+                consoleBox.innerText = `/pardon ${nick}`;
+            } else if (action === 'sethearts') {
+                consoleBox.innerText = `/lifesteal set ${nick} ${hearts}`;
+            } else if (action === 'kill') {
+                consoleBox.innerText = `/kill ${nick}`;
+            }
+        }
+
+        function generateBroadcast() {
+            const type = document.getElementById('broadcast-style').value;
+            const text = document.getElementById('broadcast-text').value.trim();
+            const consoleBox = document.getElementById('broadcast-console');
+
+            if (!text) {
+                consoleBox.innerText = "> BŁĄD: TREŚĆ OGŁOSZENIA NIE MOŻE BYĆ PUSTA!";
+                consoleBox.style.color = "#f43f5e";
+                return;
+            }
+
+            consoleBox.style.color = "#10b981";
+            consoleBox.innerText = `/bc &[OrbitSMP] &c&l${type}: &e${text}`;
+        }
+
+        async function fetchServerStatus() {
+            try {
+                const response = await fetch('https://api.mcsrvstat.us/2/orbitsmp.6mc.pl');
+                const data = await response.json();
+                const statusDiv = document.getElementById('server-status');
+                const playersDiv = document.getElementById('player-count');
+
+                if (data.online) {
+                    statusDiv.innerHTML = '<span class="online">ONLINE</span>';
+                    playersDiv.innerText = `${data.players.online} / ${data.players.max}`;
+                } else {
+                    statusDiv.innerHTML = '<span class="offline">OFFLINE</span>';
+                    playersDiv.innerText = '0 / 0';
+                }
+            } catch (error) {
+                document.getElementById('server-status').innerHTML = '<span class="offline">BŁĄD</span>';
+                document.getElementById('player-count').innerText = '? / ?';
+            }
+        }
+
+        fetchServerStatus();
+        setInterval(fetchServerStatus, 25000);
+    </script>
+</body>
+</html>
